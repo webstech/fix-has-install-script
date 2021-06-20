@@ -1,0 +1,26 @@
+{
+  "name": "fix-has-install-script",
+  "version": "1.0.0",
+  "description": "Report on packages missing `hasInstallScript` set in `package-lock.json`.  Optionally update the lock file.",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "fix-package-lock": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webstech/fix-has-install-script"
+  },
+  "author": "Chris. Webster <chris@webstech.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webstech/fix-has-install-script/issues"
+  },
+  "homepage": "https://github.com/webstech/fix-has-install-script#readme",
+  "dependencies": {
+    "commander": "^7.2.0"
+  }
+}
