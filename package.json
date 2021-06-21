@@ -1,6 +1,6 @@
 {
   "name": "fix-has-install-script",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Report on packages missing `hasInstallScript` set in `package-lock.json`.  Optionally update the lock file.",
   "main": "index.js",
   "type": "module",
