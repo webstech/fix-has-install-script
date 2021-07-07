@@ -3,7 +3,7 @@
 import commander from "commander";
 import { readFile, writeFile } from 'fs/promises';
 
-commander.version("1.0.0")
+commander.version("1.0.2")
 	.usage("[options]")
 	.description("Tool to report on packages missing `hasInstallScript` set in `package-lock.json`.  Optionally update the lock file.")
 	.option("--debug",
@@ -40,18 +40,28 @@ if (!commandOptions.fileIn) {
 
 				const depsEntry = packages[entry];
 				if (!packages[entry].hasOwnProperty('hasInstallScript')) {
-					const depsPackage = await getData(`${entry}/package.json`);
+					try {
+						const depsPackage = await getData(`${entry}/package.json`);
 
-					if (depsPackage.hasOwnProperty('scripts') && (
-						depsPackage.scripts.hasOwnProperty('install') ||
-						depsPackage.scripts.hasOwnProperty('preinstall') ||
-						depsPackage.scripts.hasOwnProperty('postinstall'))) {
-						console.log(`Package '${depsPackage.name}' requires `+
-						"'hasInstallScript' to be set");
+						if (depsPackage.hasOwnProperty('scripts') && (
+							depsPackage.scripts.hasOwnProperty('install') ||
+							depsPackage.scripts.hasOwnProperty('preinstall') ||
+							depsPackage.scripts.hasOwnProperty('postinstall'))) {
+							console.log(`Package '${depsPackage.name}' requires `+
+							"'hasInstallScript' to be set");
 
-						if (!commandOptions.dryRun) {
-							packages[entry].hasInstallScript = true;
-							updated = true;
+							if (!commandOptions.dryRun) {
+								packages[entry].hasInstallScript = true;
+								updated = true;
+							}
+						}
+					} catch(reason) {
+						debug(`Failed on ${entry}`);
+						if (reason.code === "ENOENT") {
+							console.log(`package-lock.json may need rebuilding.  ${entry} not found.`);
+						}
+						else {
+							throw reason;
 						}
 					}
 				}
@@ -66,8 +76,7 @@ if (!commandOptions.fileIn) {
 		return;
 	}
 })().catch((reason) => {
-	console.log(`Caught error ${reason}:\n${reason.stack}\n`);
-	process.stderr.write(`Caught error ${reason}:\n${reason.stack}\n`);
+	console.error(`Caught error: ${reason}`);
 	process.exit(1);
 });
 
