@@ -3,7 +3,7 @@
 import commander from "commander";
 import { readFile, writeFile } from 'fs/promises';
 
-commander.version("1.0.2")
+commander.version("1.0.3")
 	.usage("[options]")
 	.description("Tool to report on packages missing `hasInstallScript` set in `package-lock.json`.  Optionally update the lock file.")
 	.option("--debug",
@@ -32,14 +32,14 @@ if (!commandOptions.fileIn) {
 (async () => {
 	const lockFile = await getData(commandOptions.fileIn);
 	let updated = false;
-	if (lockFile.lockfileVersion && lockFile.lockfileVersion === 2) {
+	if (lockFile.lockfileVersion && [2, 3].includes(lockFile.lockfileVersion)) {
 		const packages = lockFile.packages;
 		for (const entry in packages) {
 			if (entry != "") {
 				debug(`Checking ${entry}`);
 
 				const depsEntry = packages[entry];
-				if (!packages[entry].hasOwnProperty('hasInstallScript')) {
+				if (!depsEntry.hasOwnProperty('hasInstallScript')) {
 					try {
 						const depsPackage = await getData(`${entry}/package.json`);
 
